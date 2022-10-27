@@ -36,8 +36,6 @@ ctrlProductos.obtenerProducto = async (req, res = response) => {
 ctrlProductos.crearProducto = async (req, res = response) => {
   const { estado, usuario, ...body } = req.body;
 
-  console.log(body);
-
   if (!body.lote) {
     let date = new Date();
     body.lote = date.yyyymmdd();
@@ -46,8 +44,6 @@ ctrlProductos.crearProducto = async (req, res = response) => {
   const productoDB = await Producto.findOne({
     $and: [{ nombre: body.nombre.toUpperCase() }, { lote: body.lote }],
   });
-
-  console.log(productoDB);
 
   if (productoDB) {
     return res.status(400).json({
@@ -65,7 +61,7 @@ ctrlProductos.crearProducto = async (req, res = response) => {
   const producto = new Producto(data);
 
   // Guardar DB
-  //await producto.save();
+  await producto.save();
 
   res.status(201).json(data);
 };

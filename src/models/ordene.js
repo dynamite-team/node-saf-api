@@ -21,12 +21,15 @@ const OrdeneSchema = new Schema(
         precio: {
           type: Number,
         },
+        monto: {
+          type: Number,
+        },
       },
     ],
-    monto: { type: Number, required: true },
-    direccion: {
+    montoTotal: { type: Number, required: true },
+    punto: {
       type: Schema.Types.ObjectId,
-      ref: "Usuario",
+      ref: "Punto",
       required: true,
     },
     estado: { type: String, default: "pendiente" },
