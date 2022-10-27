@@ -16,6 +16,7 @@ const paths = {
   buscar: "/api/v1/buscar",
   categorias: "/api/v1/categorias",
   productos: "/api/v1/productos",
+  puntos: "/api/v1/puntos",
   usuarios: "/api/v1/usuarios",
   uploads: "/api/v1/uploads",
 };
@@ -38,6 +39,7 @@ app.use(paths.auth, require("./src/routes/auth"));
 app.use(paths.buscar, require("./src/routes/buscar"));
 app.use(paths.categorias, require("./src/routes/categorias"));
 app.use(paths.productos, require("./src/routes/productos"));
+app.use(paths.puntos, require("./src/routes/puntos"));
 app.use(paths.usuarios, require("./src/routes/usuarios"));
 app.use(paths.uploads, require("./src/routes/uploads"));
 
