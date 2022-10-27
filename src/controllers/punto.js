@@ -3,13 +3,13 @@ const { Punto } = require("../models");
 
 const ctrlPuntos = {};
 
-ctrlPuntos.obtenerCategorias = async (req, res = response) => {
+ctrlPuntos.obtenerPuntos = async (req, res = response) => {
   const { limite = 5, desde = 0 } = req.query;
   const query = { estado: true };
 
-  const [total, categorias] = await Promise.all([
-    Categoria.countDocuments(query),
-    Categoria.find(query)
+  const [total, puntos] = await Promise.all([
+    Punto.countDocuments(query),
+    Punto.find(query)
       .populate("usuario", "nombre")
       .skip(Number(desde))
       .limit(Number(limite)),
@@ -17,7 +17,7 @@ ctrlPuntos.obtenerCategorias = async (req, res = response) => {
 
   res.json({
     total,
-    categorias,
+    puntos,
   });
 };
 
@@ -31,26 +31,26 @@ ctrlPuntos.obtenerPunto = async (req, res = response) => {
 ctrlPuntos.crearPunto = async (req, res = response) => {
   const nombre = req.body.nombre.toUpperCase();
 
-  const categoriaDB = await Categoria.findOne({ nombre });
+  const puntoDB = await Punto.findOne({ nombre });
 
-  if (categoriaDB) {
+  if (puntoDB) {
     return res.status(400).json({
-      msg: `La categoria ${categoriaDB.nombre}, ya existe`,
+      msg: `El punto ${puntoDB.nombre}, ya existe`,
     });
   }
 
   // Generar la data a guardar
   const data = {
-    nombre,
+    ...body,
     usuario: req.usuario._id,
   };
 
-  const categoria = new Categoria(data);
+  const punto = new Punto(data);
 
   // Guardar DB
-  await categoria.save();
+  await punto.save();
 
-  res.status(201).json(categoria);
+  res.status(201).json(punto);
 };
 
 ctrlPuntos.actualizarPunto = async (req, res = response) => {
@@ -60,20 +60,20 @@ ctrlPuntos.actualizarPunto = async (req, res = response) => {
   data.nombre = data.nombre.toUpperCase();
   data.usuario = req.usuario._id;
 
-  const categoria = await Categoria.findByIdAndUpdate(id, data, { new: true });
+  const punto = await Punto.findByIdAndUpdate(id, data, { new: true });
 
-  res.json(categoria);
+  res.json(punto);
 };
 
 ctrlPuntos.borrarPunto = async (req, res = response) => {
   const { id } = req.params;
-  const categoriaBorrada = await Categoria.findByIdAndUpdate(
+  const puntoBorrado = await Punto.findByIdAndUpdate(
     id,
     { estado: false },
     { new: true }
   );
 
-  res.json(categoriaBorrada);
+  res.json(puntoBorrado);
 };
 
 module.exports = ctrlPuntos;
