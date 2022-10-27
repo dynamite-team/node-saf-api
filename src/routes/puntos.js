@@ -10,7 +10,7 @@ const {
   actualizarPunto,
   borrarPunto,
 } = require("../controllers/puntos");
-const { existeCategoriaPorId } = require("../helpers/db-validators");
+const { existePuntoPorId } = require("../helpers/db-validators");
 
 const router = Router();
 
@@ -26,7 +26,7 @@ router.get(
   "/:id",
   [
     check("id", "No es un id de Mongo válido").isMongoId(),
-    check("id").custom(existeCategoriaPorId),
+    check("id").custom(existePuntoPorId),
     validarCampos,
   ],
   obtenerPunto
@@ -49,7 +49,7 @@ router.put(
   [
     validarJWT,
     check("nombre", "El nombre es obligatorio").not().isEmpty(),
-    check("id").custom(existeCategoriaPorId),
+    check("id").custom(existePuntoPorId),
     validarCampos,
   ],
   actualizarPunto
@@ -62,7 +62,7 @@ router.delete(
     validarJWT,
     esAdminRole,
     check("id", "No es un id de Mongo válido").isMongoId(),
-    check("id").custom(existeCategoriaPorId),
+    check("id").custom(existePuntoPorId),
     validarCampos,
   ],
   borrarPunto

@@ -23,9 +23,12 @@ ctrlPuntos.obtenerPuntos = async (req, res = response) => {
 
 ctrlPuntos.obtenerPunto = async (req, res = response) => {
   const { id } = req.params;
-  const categoria = await Categoria.findById(id).populate("usuario", "nombre");
 
-  res.json(categoria);
+  console.log(id);
+
+  const punto = await Punto.findById(id).populate("usuario", "nombre");
+
+  res.json(punto);
 };
 
 ctrlPuntos.crearPunto = async (req, res = response) => {
