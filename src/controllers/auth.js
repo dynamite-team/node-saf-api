@@ -6,7 +6,9 @@ const Usuario = require("../models/usuario");
 const { generarJWT } = require("../helpers/generar-jwt");
 const { googleVerify } = require("../helpers/google-verify");
 
-const login = async (req, res = response) => {
+const ctrlAuth = {};
+
+ctrlAuth.login = async (req, res = response) => {
   const { correo, password } = req.body;
 
   try {
@@ -48,7 +50,7 @@ const login = async (req, res = response) => {
   }
 };
 
-const register = async (req, res = response) => {
+ctrlAuth.register = async (req, res = response) => {
   const { nombre, correo, password, rol } = req.body;
   const usuario = new Usuario({ nombre, correo, password, rol });
 
@@ -67,7 +69,22 @@ const register = async (req, res = response) => {
   });
 };
 
-const googleSignin = async (req, res = response) => {
+ctrlAuth.renew = async (req = request, res = response) => {
+  const { _id } = req.usuario;
+
+  const usuario = await Usuario.findById(_id);
+
+  const token = await generarJWT(_id);
+
+  res.json({
+    ok: true,
+    msg: "Token revalidado",
+    usuario,
+    token,
+  });
+};
+
+ctrlAuth.googleSignin = async (req, res = response) => {
   const { id_token } = req.body;
 
   try {
@@ -110,8 +127,4 @@ const googleSignin = async (req, res = response) => {
   }
 };
 
-module.exports = {
-  login,
-  register,
-  googleSignin,
-};
+module.exports = ctrlAuth;

@@ -1,9 +1,9 @@
 const { response } = require("express");
-const { Categoria } = require("../models");
+const { Punto } = require("../models");
 
-const ctrlCategorias = {};
+const ctrlPuntos = {};
 
-ctrlCategorias.obtenerCategorias = async (req, res = response) => {
+ctrlPuntos.obtenerCategorias = async (req, res = response) => {
   const { limite = 5, desde = 0 } = req.query;
   const query = { estado: true };
 
@@ -21,14 +21,14 @@ ctrlCategorias.obtenerCategorias = async (req, res = response) => {
   });
 };
 
-ctrlCategorias.obtenerCategoria = async (req, res = response) => {
+ctrlPuntos.obtenerPunto = async (req, res = response) => {
   const { id } = req.params;
   const categoria = await Categoria.findById(id).populate("usuario", "nombre");
 
   res.json(categoria);
 };
 
-ctrlCategorias.crearCategoria = async (req, res = response) => {
+ctrlPuntos.crearPunto = async (req, res = response) => {
   const nombre = req.body.nombre.toUpperCase();
 
   const categoriaDB = await Categoria.findOne({ nombre });
@@ -53,7 +53,7 @@ ctrlCategorias.crearCategoria = async (req, res = response) => {
   res.status(201).json(categoria);
 };
 
-ctrlCategorias.actualizarCategoria = async (req, res = response) => {
+ctrlPuntos.actualizarPunto = async (req, res = response) => {
   const { id } = req.params;
   const { estado, usuario, ...data } = req.body;
 
@@ -65,7 +65,7 @@ ctrlCategorias.actualizarCategoria = async (req, res = response) => {
   res.json(categoria);
 };
 
-ctrlCategorias.borrarCategoria = async (req, res = response) => {
+ctrlPuntos.borrarPunto = async (req, res = response) => {
   const { id } = req.params;
   const categoriaBorrada = await Categoria.findByIdAndUpdate(
     id,
@@ -76,4 +76,4 @@ ctrlCategorias.borrarCategoria = async (req, res = response) => {
   res.json(categoriaBorrada);
 };
 
-module.exports = ctrlCategorias;
+module.exports = ctrlPuntos;

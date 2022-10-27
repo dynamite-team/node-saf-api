@@ -3,7 +3,9 @@ const { Producto } = require("../models");
 
 const { Date } = require("../helpers/generar-lote");
 
-const obtenerProductos = async (req, res = response) => {
+const ctrlProductos = {};
+
+ctrlProductos.obtenerProductos = async (req, res = response) => {
   const { limite = 5, desde = 0 } = req.query;
   const query = { estado: true };
 
@@ -22,7 +24,7 @@ const obtenerProductos = async (req, res = response) => {
   });
 };
 
-const obtenerProducto = async (req, res = response) => {
+ctrlProductos.obtenerProducto = async (req, res = response) => {
   const { id } = req.params;
   const producto = await Producto.findById(id)
     .populate("usuario", "nombre")
@@ -31,7 +33,7 @@ const obtenerProducto = async (req, res = response) => {
   res.json(producto);
 };
 
-const crearProducto = async (req, res = response) => {
+ctrlProductos.crearProducto = async (req, res = response) => {
   const { estado, usuario, ...body } = req.body;
 
   console.log(body);
@@ -68,7 +70,7 @@ const crearProducto = async (req, res = response) => {
   res.status(201).json(data);
 };
 
-const actualizarProducto = async (req, res = response) => {
+ctrlProductos.actualizarProducto = async (req, res = response) => {
   const { id } = req.params;
   const { estado, usuario, ...data } = req.body;
 
@@ -83,7 +85,7 @@ const actualizarProducto = async (req, res = response) => {
   res.json(producto);
 };
 
-const borrarProducto = async (req, res = response) => {
+ctrlProductos.borrarProducto = async (req, res = response) => {
   const { id } = req.params;
   const productoBorrado = await Producto.findByIdAndUpdate(
     id,
@@ -94,10 +96,4 @@ const borrarProducto = async (req, res = response) => {
   res.json(productoBorrado);
 };
 
-module.exports = {
-  crearProducto,
-  obtenerProductos,
-  obtenerProducto,
-  actualizarProducto,
-  borrarProducto,
-};
+module.exports = ctrlProductos;

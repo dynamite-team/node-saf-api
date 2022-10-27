@@ -4,6 +4,7 @@ const PuntoSchema = Schema(
   {
     nombre: {
       type: String,
+      required: [true, "El nombre es obligatorio"],
     },
     departamento: {
       type: String,

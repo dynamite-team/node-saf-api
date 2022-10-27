@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+const { Schema, model } = require("mongoose");
 
-const OrdeneSchema = new mongoose.Schema(
+const OrdeneSchema = new Schema(
   {
     usuario: {
       type: Schema.Types.ObjectId,
@@ -40,4 +40,4 @@ OrdeneSchema.methods.toJSON = function () {
   return orden;
 };
 
-module.exports = mongoose.model("Ordene", OrdeneSchema);
+module.exports = model("Ordene", OrdeneSchema);
