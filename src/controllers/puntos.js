@@ -41,7 +41,7 @@ ctrlPuntos.crearPunto = async (req, res = response) => {
 
   // Generar la data a guardar
   const data = {
-    ...body,
+    ...req.body,
     usuario: req.usuario._id,
   };
 
