@@ -9,7 +9,7 @@ const {
   crearPunto,
   actualizarPunto,
   borrarPunto,
-} = require("../controllers/punto");
+} = require("../controllers/puntos");
 const { existeCategoriaPorId } = require("../helpers/db-validators");
 
 const router = Router();
