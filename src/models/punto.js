@@ -32,6 +32,7 @@ const PuntoSchema = Schema(
 
 PuntoSchema.methods.toJSON = function () {
   const { __v, estado, ...data } = this.toObject();
+  data.uid = _id;
   return data;
 };
 
