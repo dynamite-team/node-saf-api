@@ -36,7 +36,12 @@ ctrlOrdenes.crearOrden = async (req, res = response) => {
 
   console.log(req.body);
 
-  res.status(201).json(req.body);
+  const orden = new Orden(req.body);
+  await orden.save();
+
+  res.status(201).json({
+    orden,
+  });
 
   // Generar la data a guardar
   /* const data = {
