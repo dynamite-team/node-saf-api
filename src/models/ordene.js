@@ -32,7 +32,7 @@ const OrdeneSchema = new Schema(
       ref: "Punto",
       required: true,
     },
-    estado: { type: String, default: "pendiente" },
+    estado: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
