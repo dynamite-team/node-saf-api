@@ -15,20 +15,17 @@ const UsuarioSchema = Schema(
       type: String,
       required: [true, "La contraseña es obligatoria"],
     },
+    destino: {
+      type: Schema.Types.ObjectId,
+      ref: "Punto",
+    },
     img: {
       type: String,
     },
     rol: {
       type: String,
       required: true,
-      default: "user_role",
-      emun: [
-        "admin_role",
-        "user_role",
-        "supplier_role",
-        "inventory_role",
-        "casher_role",
-      ],
+      default: "user",
     },
     estado: {
       type: Boolean,
