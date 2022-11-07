@@ -11,7 +11,7 @@ ctrlOrdenes.obtenerOrdenes = async (req, res = response) => {
     Orden.countDocuments(query),
     Orden.find(query)
       .populate("usuario", "nombre")
-      .populate("categoria", "nombre")
+      .populate("punto", "nombre")
       .skip(Number(desde))
       .limit(Number(limite)),
   ]);
@@ -26,7 +26,7 @@ ctrlOrdenes.obtenerOrden = async (req, res = response) => {
   const { id } = req.params;
   const orden = await Orden.findById(id)
     .populate("usuario", "nombre")
-    .populate("categoria", "nombre");
+    .populate("punto", "nombre");
 
   res.json(orden);
 };
