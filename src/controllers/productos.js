@@ -6,8 +6,10 @@ const { Date } = require("../helpers/generar-lote");
 const ctrlProductos = {};
 
 ctrlProductos.obtenerProductos = async (req, res = response) => {
-  const { limite = 5, desde = 0 } = req.query;
-  const query = { estado: true };
+  const { limite = 5, desde = 0, punto } = req.query;
+  const query = { estado: true, 'destino.punto': punto, 'destino.cantidad': { $ne: 0 } };
+
+  console.log(punto)
 
   const [total, productos] = await Promise.all([
     Producto.countDocuments(query),
