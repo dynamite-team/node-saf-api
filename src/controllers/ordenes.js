@@ -32,16 +32,19 @@ ctrlOrdenes.obtenerOrden = async (req, res = response) => {
 };
 
 ctrlOrdenes.crearOrden = async (req, res = response) => {
-  const { orden } = req.body;
+  const { orden, products } = req.body;
 
-  console.log(orden);
-  console.log(orden.productos);
+  products.map(async ({ uid, ...resto }) => {
+    await Producto.findByIdAndUpdate(uid, resto, { new: true });
+  });
+
+  /* const actualizacionProductos = await Producto.updateMany(
+    {},
+    { $set: products },
+    { multi: true }
+  ); */
 
   //TRAER LOS PRODUCTOS CON LAS CANTIDADES MODIFICADAS DESDE EL FRONT, QUIZAS SEA MAS FACIL DE MANEJAR
-
-  orden.productos.forEach(element => {
-    console.log(element.producto)
-  });
 
   const nuevaOrden = new Orden(orden);
   //await nuevaOrden.save();
