@@ -34,14 +34,18 @@ ctrlOrdenes.obtenerOrden = async (req, res = response) => {
 ctrlOrdenes.crearOrden = async (req, res = response) => {
   const { orden, products } = req.body;
 
-  products.map(async ({ uid, ...resto }) => {
-    await Producto.findByIdAndUpdate(uid, resto, { new: true });
+  const arrPromesa = products.map(({ uid, ...resto }) => {
+    return Producto.findByIdAndUpdate(uid, resto, { new: true });
   });
+
+  await Promise.all(arrPromesa);
+
+  //Otra opcion allSettled, si falla me indica en donde lo hizo
 
   /* const actualizacionProductos = await Producto.updateMany(
     {},
     { $set: products },
-    { multi: true }
+    { upsert: true, multi: true }
   ); */
 
   //TRAER LOS PRODUCTOS CON LAS CANTIDADES MODIFICADAS DESDE EL FRONT, QUIZAS SEA MAS FACIL DE MANEJAR
