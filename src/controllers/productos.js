@@ -7,9 +7,21 @@ const ctrlProductos = {};
 
 ctrlProductos.obtenerProductos = async (req, res = response) => {
   const { limite = 5, desde = 0, punto } = req.query;
-  const query = { estado: true, 'destino.punto': punto, 'destino.cantidad': { $ne: 0 } };
+  let query;
+  if (punto) {
+    query = {
+      estado: true,
+      "destino.punto": punto,
+      "destino.cantidad": { $ne: 0 },
+    };
+  } else {
+    query = {
+      estado: true,
+      "destino.cantidad": { $ne: 0 },
+    };
+  }
 
-  console.log(punto)
+  console.log(punto);
 
   const [total, productos] = await Promise.all([
     Producto.countDocuments(query),
