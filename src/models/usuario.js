@@ -15,7 +15,7 @@ const UsuarioSchema = Schema(
       type: String,
       required: [true, "La contraseña es obligatoria"],
     },
-    destino: {
+    designado: {
       type: Schema.Types.ObjectId,
       ref: "Punto",
     },

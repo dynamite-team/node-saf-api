@@ -14,10 +14,6 @@ const { existeCategoriaPorId } = require("../helpers/db-validators");
 
 const router = Router();
 
-/**
- * {{url}}/api/categorias
- */
-
 //  Obtener todas las categorias - publico
 router.get("/", obtenerCategorias);
 

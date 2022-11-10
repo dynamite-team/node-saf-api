@@ -14,10 +14,6 @@ const { existePuntoPorId } = require("../helpers/db-validators");
 
 const router = Router();
 
-/**
- * {{url}}/api/puntos
- */
-
 //  Obtener todos los puntos - publico
 router.get("/", obtenerPuntos);
 

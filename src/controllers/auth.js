@@ -42,89 +42,62 @@ ctrlAuth.login = async (req, res = response) => {
       usuario,
       token,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.log("Error al iniciar sesión", err);
     res.status(500).json({
-      msg: "Hable con el administrador",
+      msg: "Por favor, hable con el administrador",
     });
   }
 };
 
 ctrlAuth.register = async (req, res = response) => {
-  const { nombre, correo, password, rol } = req.body;
-  const usuario = new Usuario({ nombre, correo, password, rol });
+  const { nombre, correo, password, desginado, rol } = req.body;
 
-  // Encriptar la contraseña
-  const salt = bcryptjs.genSaltSync();
-  usuario.password = bcryptjs.hashSync(password, salt);
-
-  // Guardar en BD
-  const usuarioRegistrado = await usuario.save();
-
-  const token = await generarJWT(usuarioRegistrado.id);
-
-  res.json({
-    usuario,
-    token,
-  });
-};
-
-ctrlAuth.renew = async (req = request, res = response) => {
-  const { _id } = req.usuario;
-
-  console.log(req.usuario, "hola");
-
-  const usuario = await Usuario.findById(_id);
-
-  const token = await generarJWT(_id);
-
-  res.json({
-    ok: true,
-    msg: "Token revalidado",
-    usuario,
-    token,
-  });
-};
-
-ctrlAuth.googleSignin = async (req, res = response) => {
-  const { id_token } = req.body;
+  console.log(desginado);
 
   try {
-    const { correo, nombre, img } = await googleVerify(id_token);
+    const usuario = new Usuario({ nombre, correo, password, desginado, rol });
 
-    let usuario = await Usuario.findOne({ correo });
+    // Encriptar la contraseña
+    const salt = bcryptjs.genSaltSync();
+    usuario.password = bcryptjs.hashSync(password, salt);
 
-    if (!usuario) {
-      // Tengo que crearlo
-      const data = {
-        nombre,
-        correo,
-        password: ":P",
-        img,
-        google: true,
-      };
+    // Guardar en BD
+    const usuarioRegistrado = await usuario.save();
 
-      usuario = new Usuario(data);
-      await usuario.save();
-    }
-
-    // Si el usuario en DB
-    if (!usuario.estado) {
-      return res.status(401).json({
-        msg: "Hable con el administrador, usuario bloqueado",
-      });
-    }
-
-    // Generar el JWT
-    const token = await generarJWT(usuario.id);
+    const token = await generarJWT(usuarioRegistrado.id);
 
     res.json({
       usuario,
       token,
     });
-  } catch (error) {
-    res.status(400).json({
-      msg: "Token de Google no es válido",
+  } catch (err) {
+    console.log("Error al registrar al usuario: ", error);
+    res.status(500).json({
+      msg: "Por favor, hable con el administrador",
+    });
+  }
+};
+
+ctrlAuth.renew = async (req = request, res = response) => {
+  const { _id } = req.usuario;
+
+  try {
+    const usuario = await Usuario.findById(_id);
+
+    const token = await generarJWT(_id);
+
+    res.json({
+      ok: true,
+      msg: "Token revalidado",
+      usuario,
+      token,
+    });
+  } catch (err) {
+    console.log("Error al revalidar al token", err);
+    return res.status(500).json({
+      ok: false,
+      msg: "Por favor, hable con el administrador",
     });
   }
 };

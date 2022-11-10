@@ -10,7 +10,7 @@ const { Usuario, Producto } = require("../models");
 
 const ctrlImagen = {};
 
-ctrlImagen.cargarArchivo = async (req = request, res = response) => {
+ctrlImagen.subirImagen = async (req = request, res = response) => {
   const { tempFilePath } = req.files.imagen;
   const nombre = uuidv4();
 

@@ -18,10 +18,6 @@ const {
 
 const router = Router();
 
-/**
- * {{url}}/api/categorias
- */
-
 //  Obtener todas las ordenes - publico
 router.get("/", obtenerOrdenes);
 

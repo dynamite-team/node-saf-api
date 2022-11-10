@@ -18,10 +18,6 @@ const {
 
 const router = Router();
 
-/**
- * {{url}}/api/productos
- */
-
 //  Obtener todas los productos - publico
 router.get("/", obtenerProductos);
 

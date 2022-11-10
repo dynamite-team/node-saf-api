@@ -18,7 +18,9 @@ const validarJWT = async (req = request, res = response, next) => {
     const { uid } = jwt.verify(token, secret_key);
 
     // leer el usuario que corresponde al uid
-    const usuario = await Usuario.findById(uid);
+    const usuario = await Usuario.findById(uid).populate("designado", "nombre");
+
+    console.log(usuario);
 
     if (!usuario) {
       return res.status(401).json({

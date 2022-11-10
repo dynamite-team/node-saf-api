@@ -7,53 +7,72 @@ ctrlPuntos.obtenerPuntos = async (req, res = response) => {
   const { limite = 5, desde = 0 } = req.query;
   const query = { estado: true };
 
-  const [total, puntos] = await Promise.all([
-    Punto.countDocuments(query),
-    Punto.find(query)
-      .populate("usuario", "nombre")
-      .skip(Number(desde))
-      .limit(Number(limite)),
-  ]);
+  try {
+    const [total, puntos] = await Promise.all([
+      Punto.countDocuments(query),
+      Punto.find(query)
+        .populate("usuario", "nombre")
+        .skip(Number(desde))
+        .limit(Number(limite)),
+    ]);
 
-  res.json({
-    total,
-    puntos,
-  });
+    res.json({
+      total,
+      puntos,
+    });
+  } catch (err) {
+    console.log("Error al mostrar los puntos: ", err);
+    res.status(500).json({
+      msg: "Por favor, hable con el administrador",
+    });
+  }
 };
 
 ctrlPuntos.obtenerPunto = async (req, res = response) => {
   const { id } = req.params;
 
-  console.log(id);
+  try {
+    const punto = await Punto.findById(id).populate("usuario", "nombre");
 
-  const punto = await Punto.findById(id).populate("usuario", "nombre");
-
-  res.json(punto);
+    res.json(punto);
+  } catch (err) {
+    console.log("Error al mostrar el punto: ", err);
+    res.status(500).json({
+      msg: "Por favor, hable con el administrador",
+    });
+  }
 };
 
 ctrlPuntos.crearPunto = async (req, res = response) => {
   const nombre = req.body.nombre.toUpperCase();
 
-  const puntoDB = await Punto.findOne({ nombre });
+  try {
+    const puntoDB = await Punto.findOne({ nombre });
 
-  if (puntoDB) {
-    return res.status(400).json({
-      msg: `El punto ${puntoDB.nombre}, ya existe`,
+    if (puntoDB) {
+      return res.status(400).json({
+        msg: `El punto ${puntoDB.nombre}, ya existe`,
+      });
+    }
+
+    // Generar la data a guardar
+    const data = {
+      ...req.body,
+      usuario: req.usuario._id,
+    };
+
+    const punto = new Punto(data);
+
+    // Guardar DB
+    await punto.save();
+
+    res.status(201).json(punto);
+  } catch (err) {
+    console.log("Error al crear el punto: ", err);
+    res.status(500).json({
+      msg: "Por favor, hable con el administrador",
     });
   }
-
-  // Generar la data a guardar
-  const data = {
-    ...req.body,
-    usuario: req.usuario._id,
-  };
-
-  const punto = new Punto(data);
-
-  // Guardar DB
-  await punto.save();
-
-  res.status(201).json(punto);
 };
 
 ctrlPuntos.actualizarPunto = async (req, res = response) => {
@@ -63,20 +82,35 @@ ctrlPuntos.actualizarPunto = async (req, res = response) => {
   data.nombre = data.nombre.toUpperCase();
   data.usuario = req.usuario._id;
 
-  const punto = await Punto.findByIdAndUpdate(id, data, { new: true });
+  try {
+    const punto = await Punto.findByIdAndUpdate(id, data, { new: true });
 
-  res.json(punto);
+    res.json(punto);
+  } catch (err) {
+    console.log("Error al actualizar el punto: ", err);
+    res.status(500).json({
+      msg: "Por favor, hable con el administrador",
+    });
+  }
 };
 
 ctrlPuntos.borrarPunto = async (req, res = response) => {
   const { id } = req.params;
-  const puntoBorrado = await Punto.findByIdAndUpdate(
-    id,
-    { estado: false },
-    { new: true }
-  );
 
-  res.json(puntoBorrado);
+  try {
+    const puntoBorrado = await Punto.findByIdAndUpdate(
+      id,
+      { estado: false },
+      { new: true }
+    );
+
+    res.json(puntoBorrado);
+  } catch (err) {
+    console.log("Error al borrar el punto: ", err);
+    res.status(500).json({
+      msg: "Por favor, hable con el administrador",
+    });
+  }
 };
 
 module.exports = ctrlPuntos;

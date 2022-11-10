@@ -6,7 +6,7 @@ const Usuario = require("../models/usuario");
 const ctrlUsuario = {};
 
 ctrlUsuario.obtenerUsuarios = async (req = request, res = response) => {
-  const { desde = 0, hasta = 5 } = req.query;
+  const { desde = 0, limite = 5 } = req.query;
   const query = { estado: true };
 
   try {
@@ -20,7 +20,7 @@ ctrlUsuario.obtenerUsuarios = async (req = request, res = response) => {
       usuarios,
     });
   } catch (err) {
-    console.log(err);
+    console.log("Error al mostrar los usuarios", err);
     res.status(500).json({
       msg: "Por favor hable con el administrador",
     });
@@ -33,9 +33,11 @@ ctrlUsuario.obtenerUsuario = async (req = request, res = response) => {
     //Busco el usuario con dicho ID.
     const usuario = await Usuario.findById(id);
     //Verifico que el usuario este activo.
+
+    console.log(usuario);
+
     if (!usuario.estado) {
       return res.status(400).json({
-        ok: false,
         msg: `El usuario ${usuario.nombre} no existe`,
       });
     }
@@ -45,7 +47,6 @@ ctrlUsuario.obtenerUsuario = async (req = request, res = response) => {
   } catch (err) {
     console.log("Error al mostrar los datos del usuario: ", err);
     res.status(500).json({
-      ok: false,
       msg: "Por favor, hable con el administrador",
     });
   }
@@ -61,9 +62,16 @@ ctrlUsuario.editarUsuario = async (req, res = response) => {
     resto.password = bcryptjs.hashSync(password, salt);
   }
 
-  const usuario = await Usuario.findByIdAndUpdate(id, resto);
+  try {
+    const usuario = await Usuario.findByIdAndUpdate(id, resto);
 
-  res.json(usuario);
+    res.json(usuario);
+  } catch (err) {
+    console.log("Error al actualizar el usuario: ", err);
+    res.status(500).json({
+      msg: "Por favor, hable con el administrador",
+    });
+  }
 };
 
 ctrlUsuario.usuariosPatch = (req, res = response) => {
@@ -74,9 +82,17 @@ ctrlUsuario.usuariosPatch = (req, res = response) => {
 
 ctrlUsuario.eliminarUsuario = async (req, res = response) => {
   const { id } = req.params;
-  const usuario = await Usuario.findByIdAndUpdate(id, { estado: false });
 
-  res.json(usuario);
+  try {
+    const usuario = await Usuario.findByIdAndUpdate(id, { estado: false });
+
+    res.json(usuario);
+  } catch (err) {
+    console.log("Error al borrar el usuario: ", err);
+    res.status(500).json({
+      msg: "Por favor, hable con el administrador",
+    });
+  }
 };
 
 module.exports = ctrlUsuario;

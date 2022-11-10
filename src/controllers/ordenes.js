@@ -7,90 +7,113 @@ ctrlOrdenes.obtenerOrdenes = async (req, res = response) => {
   const { limite = 5, desde = 0 } = req.query;
   const query = { estado: true };
 
-  const [total, ordenes] = await Promise.all([
-    Orden.countDocuments(query),
-    Orden.find(query)
-      .populate("usuario", "nombre")
-      .populate("punto", "nombre")
-      .skip(Number(desde))
-      .limit(Number(limite)),
-  ]);
+  try {
+    const [total, ordenes] = await Promise.all([
+      Orden.countDocuments(query),
+      Orden.find(query)
+        .populate("usuario", "nombre")
+        .populate("punto", "nombre")
+        .skip(Number(desde))
+        .limit(Number(limite)),
+    ]);
 
-  res.json({
-    total,
-    ordenes,
-  });
+    res.json({
+      total,
+      ordenes,
+    });
+  } catch (err) {
+    console.log("Error al mostrar las ordenes: ", err);
+    res.status(500).json({
+      msg: "Por favor, hable con el administrador",
+    });
+  }
 };
 
 ctrlOrdenes.obtenerOrden = async (req, res = response) => {
   const { id } = req.params;
-  const orden = await Orden.findById(id)
-    .populate("usuario", "nombre")
-    .populate("punto", "nombre");
 
-  res.json(orden);
+  try {
+    const orden = await Orden.findById(id)
+      .populate("usuario", "nombre")
+      .populate("punto", "nombre");
+
+    res.json(orden);
+  } catch (err) {
+    console.log("Error al mostrar la orden: ", err);
+    res.status(500).json({
+      msg: "Por favor, hable con el administrador",
+    });
+  }
 };
 
 ctrlOrdenes.crearOrden = async (req, res = response) => {
-  const { orden, products } = req.body;
+  const { orden } = req.body;
 
-  const arrPromesa = products.map(({ uid, ...resto }) => {
-    return Producto.findByIdAndUpdate(uid, resto, { new: true });
-  });
+  orden.usuario = req.usuario._id;
 
-  await Promise.all(arrPromesa);
+  console.log(orden);
 
-  //Otra opcion allSettled, si falla me indica en donde lo hizo
+  /*   try {
+    const arrPromesa = products.map(({ uid, ...resto }) => {
+      return Producto.findByIdAndUpdate(uid, resto, { new: true });
+    });
 
-  /* const actualizacionProductos = await Producto.updateMany(
-    {},
-    { $set: products },
-    { upsert: true, multi: true }
-  ); */
+    //Otra opcion allSettled, si falla me indica en donde lo hizo
+    await Promise.all(arrPromesa);
 
-  //TRAER LOS PRODUCTOS CON LAS CANTIDADES MODIFICADAS DESDE EL FRONT, QUIZAS SEA MAS FACIL DE MANEJAR
+    // Generar la data a guardar
+    const data = {
+      ...orden,
+      usuario: req.usuario._id,
+    };
 
-  const nuevaOrden = new Orden(orden);
-  //await nuevaOrden.save();
+    const nuevaOrden = new Orden(data);
+    //await nuevaOrden.save();
 
-  res.status(201).json({
-    nuevaOrden,
-  });
-
-  // Generar la data a guardar
-  /* const data = {
-    ...body,
-    usuario: req.usuario._id,
-  }; */
-
-  //const orden = new Orden(data);
-
-  // Guardar DB
-  //await orden.save();
-
-  //res.status(201).json(data);
+    res.status(201).json({
+      nuevaOrden,
+    });
+  } catch (err) {
+    console.log("Error al crear la orden: ", err);
+    res.status(500).json({
+      msg: "Por favor, hable con el administrador",
+    });
+  } */
 };
 
 ctrlOrdenes.actualizarOrden = async (req, res = response) => {
   const { id } = req.params;
   const { estado, usuario, ...data } = req.body;
 
-  data.usuario = req.usuario._id;
-
-  const orden = await Orden.findByIdAndUpdate(id, data, { new: true });
-
-  res.json(orden);
+  try {
+    data.usuario = req.usuario._id;
+    const orden = await Orden.findByIdAndUpdate(id, data, { new: true });
+    res.json(orden);
+  } catch (err) {
+    console.log("Error al actualizar las orden: ", err);
+    res.status(500).json({
+      msg: "Por favor, hable con el administrador",
+    });
+  }
 };
 
 ctrlOrdenes.borrarOrden = async (req, res = response) => {
   const { id } = req.params;
-  const ordenBorrada = await Orden.findByIdAndUpdate(
-    id,
-    { estado: false },
-    { new: true }
-  );
 
-  res.json(ordenBorrada);
+  try {
+    const ordenBorrada = await Orden.findByIdAndUpdate(
+      id,
+      { estado: false },
+      { new: true }
+    );
+
+    res.json(ordenBorrada);
+  } catch (err) {
+    console.log("Error al borrar la orden: ", err);
+    res.status(500).json({
+      msg: "Por favor, hable con el administrador",
+    });
+  }
 };
 
 module.exports = ctrlOrdenes;
