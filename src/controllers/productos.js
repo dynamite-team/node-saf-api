@@ -8,6 +8,8 @@ const ctrlProductos = {};
 ctrlProductos.obtenerProductos = async (req, res = response) => {
   const { limite = 5, desde = 0, punto } = req.query;
   let query;
+  let categorias = [];
+
   if (punto) {
     query = {
       estado: true,
@@ -21,8 +23,6 @@ ctrlProductos.obtenerProductos = async (req, res = response) => {
     };
   }
 
-  console.log(punto);
-
   const [total, productos] = await Promise.all([
     Producto.countDocuments(query),
     Producto.find(query)
@@ -32,9 +32,16 @@ ctrlProductos.obtenerProductos = async (req, res = response) => {
       .limit(Number(limite)),
   ]);
 
+  productos.forEach((c) => {
+    if (!categorias.includes(c.categoria.nombre)) {
+      categorias = [c.categoria.nombre, ...categorias];
+    }
+  });
+
   res.json({
     total,
     productos,
+    categorias
   });
 };
 
