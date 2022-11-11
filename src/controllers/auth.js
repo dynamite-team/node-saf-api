@@ -51,12 +51,10 @@ ctrlAuth.login = async (req, res = response) => {
 };
 
 ctrlAuth.register = async (req, res = response) => {
-  const { nombre, correo, password, desginado, rol } = req.body;
-
-  console.log(desginado);
+  const { nombre, correo, password, designado, rol } = req.body;
 
   try {
-    const usuario = new Usuario({ nombre, correo, password, desginado, rol });
+    const usuario = new Usuario({ nombre, correo, password, designado, rol });
 
     // Encriptar la contraseña
     const salt = bcryptjs.genSaltSync();

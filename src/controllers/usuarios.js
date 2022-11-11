@@ -12,7 +12,7 @@ ctrlUsuario.obtenerUsuarios = async (req = request, res = response) => {
   try {
     const [total, usuarios] = await Promise.all([
       Usuario.countDocuments(query),
-      Usuario.find(query).skip(Number(desde)).limit(Number(hasta)),
+      Usuario.find(query).skip(Number(desde)).limit(Number(limite)),
     ]);
 
     res.status(200).json({
@@ -31,7 +31,7 @@ ctrlUsuario.obtenerUsuario = async (req = request, res = response) => {
   const { id } = req.params;
   try {
     //Busco el usuario con dicho ID.
-    const usuario = await Usuario.findById(id);
+    const usuario = await Usuario.findById(id).populate("designado", "nombre");
     //Verifico que el usuario este activo.
 
     console.log(usuario);

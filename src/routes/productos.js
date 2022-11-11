@@ -4,9 +4,10 @@ const { check } = require("express-validator");
 const { validarJWT, validarCampos, esAdminRole } = require("../middlewares");
 
 const {
-  crearProducto,
+  obtenerInventario,
   obtenerProductos,
   obtenerProducto,
+  crearProducto,
   actualizarProducto,
   borrarProducto,
 } = require("../controllers/productos");
@@ -17,6 +18,8 @@ const {
 } = require("../helpers/db-validators");
 
 const router = Router();
+
+router.get("/inventario", obtenerInventario);
 
 //  Obtener todas los productos - publico
 router.get("/", obtenerProductos);

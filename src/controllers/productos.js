@@ -5,6 +5,57 @@ const { Date } = require("../helpers/generar-lote");
 
 const ctrlProductos = {};
 
+ctrlProductos.obtenerInventario = async (req, res = response) => {
+  const { limite = 5, desde = 0, punto } = req.query;
+  let query;
+  /*   let categorias = []; */
+
+  /*   if (punto) {
+    query = {
+      estado: true,
+      "destino.punto": punto,
+      "destino.cantidad": { $ne: 0 },
+    };
+  } else { */
+  query = {
+    estado: true,
+    "destino.cantidad": { $ne: 0 },
+  };
+  /* } */
+
+  try {
+    const test = await Producto.aggregate({}, { $unwind: "$destino" });
+    console.log(test);
+
+    const [total, inventario] = await Promise.all([
+      Producto.countDocuments(query),
+      Producto.find(query)
+        .populate("usuario", "nombre")
+        .populate("categoria", "nombre")
+        .populate("destino.punto", "nombre")
+        .skip(Number(desde))
+        .limit(Number(limite)),
+    ]);
+
+    /* productos.forEach((c) => {
+      if (!categorias.includes(c.categoria.nombre)) {
+        categorias = [c.categoria.nombre, ...categorias];
+      }
+    }); */
+
+    res.json({
+      total,
+      inventario,
+      /* categorias, */
+    });
+  } catch (err) {
+    console.log("Error al mostrar los productos: ", err);
+    res.status(500).json({
+      msg: "Por favor, hable con el administrador",
+    });
+  }
+};
+
 ctrlProductos.obtenerProductos = async (req, res = response) => {
   const { limite = 5, desde = 0, punto } = req.query;
   let query;
@@ -29,6 +80,7 @@ ctrlProductos.obtenerProductos = async (req, res = response) => {
       Producto.find(query)
         .populate("usuario", "nombre")
         .populate("categoria", "nombre")
+        .populate("destino.punto", "nombre")
         .skip(Number(desde))
         .limit(Number(limite)),
     ]);
