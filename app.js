@@ -1,5 +1,6 @@
 const cors = require("cors");
 const express = require("express");
+const fileUpload = require("express-fileupload");
 const morgan = require("morgan");
 const { default: helmet } = require("helmet");
 
@@ -28,6 +29,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(helmet());
 app.use(morgan("dev"));
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+    createParentPath: true,
+  })
+);
 
 //Public directory
 app.use(express.static("public"));

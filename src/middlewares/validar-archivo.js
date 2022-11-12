@@ -1,9 +1,10 @@
-const { response } = require("express");
+const { request, response } = require("express");
 
-const validarArchivoSubir = (req, res = response, next) => {
-  if (!req.files || Object.keys(req.files).length === 0 || !req.files.archivo) {
+const validarArchivoSubir = (req = request, res = response, next) => {
+  console.log(req.files.imagen);
+  if (!req.files || Object.keys(req.files).length === 0 || !req.files.imagen) {
     return res.status(400).json({
-      msg: "No hay archivos que subir - validarArchivoSubir",
+      msg: "No hay imagenes que subir - validarImagen",
     });
   }
 

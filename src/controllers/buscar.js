@@ -1,4 +1,4 @@
-const { response } = require("express");
+const { response, request } = require("express");
 const { ObjectId } = require("mongoose").Types;
 
 const { Usuario, Categoria, Producto } = require("../models");
@@ -58,26 +58,48 @@ const buscarCategorias = async (termino = "", res = response) => {
   }
 };
 
-const buscarProductos = async (termino = "", res = response) => {
+const buscarProductos = async (
+  termino = "",
+  lote = "",
+  proveedor = "",
+  res = response
+) => {
   const esMongoID = ObjectId.isValid(termino); // TRUE
 
   try {
     if (esMongoID) {
-      const producto = await Producto.findById(termino).populate(
-        "categoria",
-        "nombre"
-      );
+      const producto = await Producto.findById(termino)
+        .populate("categoria", "nombre")
+        .populate("proveedor", "nombre");
       return res.json({
         results: producto ? [producto] : [],
       });
     }
 
     const regex = new RegExp(termino, "i");
-    const productos = await Producto.find({
+    let query = {
       nombre: regex,
       estado: true,
-    }).populate("categoria", "nombre");
+    };
 
+    lote
+      ? (query = {
+          ...query,
+          lote,
+        })
+      : query;
+
+    proveedor
+      ? (query = {
+          ...query,
+          proveedor,
+        })
+      : query;
+
+    const productos = await Producto.find(query).populate(
+      "categoria",
+      "nombre"
+    );
     res.json({
       results: productos,
     });
@@ -89,8 +111,9 @@ const buscarProductos = async (termino = "", res = response) => {
   }
 };
 
-const buscar = (req, res = response) => {
+const buscador = (req, res = response) => {
   const { coleccion, termino } = req.params;
+  const { lote, proveedor } = req.query;
 
   if (!coleccionesPermitidas.includes(coleccion)) {
     return res.status(400).json({
@@ -106,7 +129,7 @@ const buscar = (req, res = response) => {
       buscarCategorias(termino, res);
       break;
     case "productos":
-      buscarProductos(termino, res);
+      buscarProductos(termino, lote, proveedor, res);
       break;
 
     default:
@@ -117,5 +140,5 @@ const buscar = (req, res = response) => {
 };
 
 module.exports = {
-  buscar,
+  buscador,
 };

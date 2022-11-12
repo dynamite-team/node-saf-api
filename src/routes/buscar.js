@@ -1,8 +1,8 @@
 const { Router } = require("express");
-const { buscar } = require("../controllers/buscar");
+const { buscador } = require("../controllers/buscar");
 
 const router = Router();
 
-router.get("/:coleccion/:termino", buscar);
+router.get("/:coleccion/:termino", buscador);
 
 module.exports = router;

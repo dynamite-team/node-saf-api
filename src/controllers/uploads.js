@@ -2,6 +2,8 @@ const cloudinary = require("cloudinary").v2;
 
 const { cloudinary_key } = require("../config");
 
+const { v4: uuidv4 } = require('uuid');
+
 cloudinary.config(cloudinary_key);
 
 const { response } = require("express");

@@ -50,7 +50,12 @@ const ProductoSchema = Schema(
         },
       },
     ],
-    disponible: { type: Boolean, default: true },
+    proveedor: {
+      type: Schema.Types.ObjectId,
+      ref: "Usuario",
+      required: true,
+    },
+    disponible: { type: Boolean, default: false },
     img: { type: String },
   },
   { timestamps: true }
