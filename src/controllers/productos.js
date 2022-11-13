@@ -110,6 +110,11 @@ ctrlProductos.obtenerInventario = async (req, res = response) => {
   }
 };
 
+ctrlProductos.actualizarInventario = async (req, res = response) => {
+  const { id } = req.params;
+  const body = req.body;
+};
+
 ctrlProductos.obtenerProductos = async (req, res = response) => {
   const { limite = 5, desde = 0, punto = "" } = req.query;
   let query;
@@ -163,7 +168,7 @@ ctrlProductos.obtenerProductos = async (req, res = response) => {
           {
             $unwind: "$nombre", // separamos el arreglo por documentos
           },
-/*           {
+          /*           {
             $project: { nombre: 1, _id: 0 }, // mostramos solo algunos campos
           }, */
         ]),

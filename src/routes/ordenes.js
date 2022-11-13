@@ -4,6 +4,7 @@ const { check } = require("express-validator");
 const { validarJWT, validarCampos, esAdminRole } = require("../middlewares");
 
 const {
+  stats,
   obtenerOrdenes,
   obtenerOrden,
   crearOrden,
@@ -17,6 +18,9 @@ const {
 } = require("../helpers/db-validators");
 
 const router = Router();
+
+//  Obtener todas las ordenes - publico
+router.get("/stats", stats);
 
 //  Obtener todas las ordenes - publico
 router.get("/", obtenerOrdenes);

@@ -3,23 +3,191 @@ const { Orden, Producto } = require("../models");
 
 const ctrlOrdenes = {};
 
+ctrlOrdenes.stats = async (req, res = response) => {
+  const date = new Date();
+  const today = new Date(date.setHours(0, 0, 0, 0));
+  const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
+  const previousMonth = new Date(new Date().setMonth(lastMonth.getMonth() - 1));
+
+  const last6Month = new Date(date.setMonth(date.getMonth() - 6));
+
+  //console.log(lastMonth, "last");
+  //console.log(previousMonth, "previous");
+
+  console.log(today);
+
+  try {
+    const [seisMeses, anteriorActualMes, esteDia, estaSemana] =
+      await Promise.all([
+        Orden.aggregate([
+          {
+            /* {
+            createdAt: { $gte: previousMonth },
+          }, */
+            $match: {
+              createdAt: { $gte: last6Month },
+              estado: true,
+            },
+          },
+          {
+            $project: {
+              month: { $month: "$createdAt" },
+              sales: "$montoTotal",
+            },
+          },
+          {
+            $group: {
+              _id: "$month",
+              total: { $sum: "$sales" },
+            },
+          },
+        ]),
+        Orden.aggregate([
+          {
+            /* {
+            createdAt: { $gte: previousMonth },
+          }, */
+            $match: {
+              createdAt: { $gte: previousMonth },
+              estado: true,
+            },
+          },
+          {
+            $project: {
+              month: { $month: "$createdAt" },
+              sales: "$montoTotal",
+              productos: 1,
+            },
+          },
+          {
+            $unwind: "$productos",
+          },
+          {
+            $group: {
+              _id: "$month",
+              total: { $sum: "$sales" },
+              ordenes: { $sum: 1 },
+              productos: { $sum: "$productos.cantidad" },
+            },
+          },
+        ]),
+        Orden.aggregate([
+          {
+            /* {
+            createdAt: { $gte: previousMonth },
+          }, */
+            $match: {
+              createdAt: { $gte: today },
+              estado: true,
+            },
+          },
+          {
+            $project: {
+              month: { $month: "$createdAt" },
+              sales: "$montoTotal",
+            },
+          },
+          {
+            $group: {
+              _id: "$month",
+              total: { $sum: "$sales" },
+              ordenes: { $sum: 1 },
+            },
+          },
+        ]),
+        Orden.aggregate([
+          {
+            /* {
+            createdAt: { $gte: previousMonth },
+          }, */
+            $match: {
+              createdAt: {
+                $gte: new Date(new Date() - 7 * 60 * 60 * 24 * 1000),
+              },
+              estado: true,
+            },
+          },
+          {
+            $project: {
+              month: { $month: "$createdAt" },
+              sales: "$montoTotal",
+            },
+          },
+          {
+            $group: {
+              _id: "$month",
+              total: { $sum: "$sales" },
+              ordenes: { $sum: 1 },
+            },
+          },
+        ]),
+      ]);
+
+    res.status(200).json({ seisMeses, anteriorActualMes, esteDia, estaSemana });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
 ctrlOrdenes.obtenerOrdenes = async (req, res = response) => {
   const { limite = 5, desde = 0 } = req.query;
   const query = { estado: true };
 
   try {
-    const [total, ordenes] = await Promise.all([
+    const [total, detallado, ordenes] = await Promise.all([
       Orden.countDocuments(query),
       Orden.find(query)
-        .populate("usuario", "nombre")
+        .populate("usuario", "nombre img")
         .populate("punto", "nombre")
         .skip(Number(desde))
         .limit(Number(limite)),
+      Orden.aggregate([
+        { $match: query },
+        {
+          $lookup: {
+            from: "usuarios",
+            localField: "usuario",
+            foreignField: "_id",
+            as: "usuario",
+          },
+        },
+        {
+          $unwind: "$usuario",
+        },
+        {
+          $lookup: {
+            from: "puntos",
+            localField: "punto",
+            foreignField: "_id",
+            as: "punto",
+          },
+        },
+        {
+          $unwind: "$punto",
+        },
+        {
+          $project: {
+            _id: 0,
+            id: "$_id",
+            usuario: "$usuario.nombre",
+            img: "$usuario.img",
+            montoTotal: 1,
+            punto: "$punto.nombre",
+            createdAt: {
+              $dateToString: {
+                format: "%d-%m-%Y",
+                date: "$createdAt",
+              },
+            },
+          },
+        },
+      ]),
     ]);
 
     res.json({
       total,
       ordenes,
+      detallado,
     });
   } catch (err) {
     console.log("Error al mostrar las ordenes: ", err);
@@ -47,14 +215,10 @@ ctrlOrdenes.obtenerOrden = async (req, res = response) => {
 };
 
 ctrlOrdenes.crearOrden = async (req, res = response) => {
-  const { orden } = req.body;
+  const { cart, orden } = req.body;
 
-  orden.usuario = req.usuario._id;
-
-  console.log(orden);
-
-  /*   try {
-    const arrPromesa = products.map(({ uid, ...resto }) => {
+  try {
+    const arrPromesa = cart.map(({ uid, ...resto }) => {
       return Producto.findByIdAndUpdate(uid, resto, { new: true });
     });
 
@@ -68,7 +232,7 @@ ctrlOrdenes.crearOrden = async (req, res = response) => {
     };
 
     const nuevaOrden = new Orden(data);
-    //await nuevaOrden.save();
+    await nuevaOrden.save();
 
     res.status(201).json({
       nuevaOrden,
@@ -78,7 +242,7 @@ ctrlOrdenes.crearOrden = async (req, res = response) => {
     res.status(500).json({
       msg: "Por favor, hable con el administrador",
     });
-  } */
+  }
 };
 
 ctrlOrdenes.actualizarOrden = async (req, res = response) => {

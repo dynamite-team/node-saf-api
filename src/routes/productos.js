@@ -5,6 +5,7 @@ const { validarJWT, validarCampos, esAdminRole } = require("../middlewares");
 
 const {
   obtenerInventario,
+  actualizarInventario,
   obtenerProductos,
   obtenerProducto,
   crearProducto,
@@ -20,6 +21,8 @@ const {
 const router = Router();
 
 router.get("/inventario", obtenerInventario);
+
+router.put("/inventario/:id", [validarJWT], actualizarInventario);
 
 //  Obtener todas los productos - publico
 router.get("/", obtenerProductos);
