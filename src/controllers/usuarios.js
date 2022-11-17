@@ -34,8 +34,6 @@ ctrlUsuario.obtenerUsuario = async (req = request, res = response) => {
     const usuario = await Usuario.findById(id).populate("designado", "nombre");
     //Verifico que el usuario este activo.
 
-    console.log(usuario);
-
     if (!usuario.estado) {
       return res.status(400).json({
         msg: `El usuario ${usuario.nombre} no existe`,

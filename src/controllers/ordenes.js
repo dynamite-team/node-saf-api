@@ -11,11 +11,6 @@ ctrlOrdenes.stats = async (req, res = response) => {
 
   const last6Month = new Date(date.setMonth(date.getMonth() - 6));
 
-  //console.log(lastMonth, "last");
-  //console.log(previousMonth, "previous");
-
-  console.log(today);
-
   try {
     const [seisMeses, anteriorActualMes, esteDia, estaSemana] =
       await Promise.all([
