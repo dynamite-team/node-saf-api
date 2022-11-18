@@ -12,7 +12,7 @@ ctrlOrdenes.stats = async (req, res = response) => {
   const last6Month = new Date(date.setMonth(date.getMonth() - 6));
 
   try {
-    const [seisMeses, anteriorActualMes, esteDia, estaSemana] =
+    const [seisMeses, anteriorActualMes, productoMes, esteDia, estaSemana] =
       await Promise.all([
         Orden.aggregate([
           {
@@ -54,14 +54,37 @@ ctrlOrdenes.stats = async (req, res = response) => {
               productos: 1,
             },
           },
+
+          {
+            $group: {
+              _id: "$month",
+              total: { $sum: "$sales" },
+              ordenes: { $sum: 1 },
+            },
+          },
+        ]),
+        Orden.aggregate([
+          {
+            /* {
+            createdAt: { $gte: previousMonth },
+          }, */
+            $match: {
+              createdAt: { $gte: previousMonth },
+              estado: true,
+            },
+          },
+          {
+            $project: {
+              month: { $month: "$createdAt" },
+              productos: 1,
+            },
+          },
           {
             $unwind: "$productos",
           },
           {
             $group: {
               _id: "$month",
-              total: { $sum: "$sales" },
-              ordenes: { $sum: 1 },
               productos: { $sum: "$productos.cantidad" },
             },
           },
@@ -118,7 +141,9 @@ ctrlOrdenes.stats = async (req, res = response) => {
         ]),
       ]);
 
-    res.status(200).json({ seisMeses, anteriorActualMes, esteDia, estaSemana });
+    res
+      .status(200)
+      .json({ seisMeses, anteriorActualMes, productoMes, esteDia, estaSemana });
   } catch (err) {
     res.status(500).json(err);
   }
