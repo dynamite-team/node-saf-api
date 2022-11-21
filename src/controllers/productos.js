@@ -5,6 +5,27 @@ const { Date } = require("../helpers/generar-lote");
 
 const ctrlProductos = {};
 
+ctrlProductos.obtenerProductosProductor = async (req, res = response) => {
+  const { proveedor = "" } = req.query;
+  const query = { estado: true, proveedor };
+  try {
+    const [total, productosProductor] = await Promise.all([
+      Usuario.countDocuments(query),
+      Usuario.find(query),
+    ]);
+
+    res.status(200).json({
+      total,
+      productosProductor,
+    });
+  } catch (err) {
+    console.log("Error al mostrar los usuarios", err);
+    res.status(500).json({
+      msg: "Por favor hable con el administrador",
+    });
+  }
+};
+
 ctrlProductos.obtenerInventario = async (req, res = response) => {
   const { limite = 5, desde = 0 } = req.query;
   let query;

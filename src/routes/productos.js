@@ -4,6 +4,7 @@ const { check } = require("express-validator");
 const { validarJWT, validarCampos, esAdminRole } = require("../middlewares");
 
 const {
+  obtenerProductosProductor,
   obtenerInventario,
   actualizarInventario,
   obtenerProductos,
@@ -19,6 +20,8 @@ const {
 } = require("../helpers/db-validators");
 
 const router = Router();
+
+router.get("/proveedor/:id", obtenerProductosProductor);
 
 router.get("/inventario", obtenerInventario);
 
