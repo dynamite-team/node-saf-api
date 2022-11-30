@@ -14,31 +14,8 @@ ctrlUsuario.obtenerUsuarios = async (req = request, res = response) => {
     const [total, usuarios, tabla] = await Promise.all([
       Usuario.countDocuments(query),
       Usuario.find(query).skip(Number(desde)).limit(Number(limite)),
-
       Usuario.aggregate([
         { $match: { estado: true } },
-        /*         {
-          $lookup: {
-            from: "usuarios",
-            localField: "usuario",
-            foreignField: "_id",
-            as: "usuario",
-          },
-        },
-        {
-          $unwind: "$usuario",
-        },
-        {
-          $lookup: {
-            from: "puntos",
-            localField: "punto",
-            foreignField: "_id",
-            as: "punto",
-          },
-        },
-        {
-          $unwind: "$punto",
-        },*/
         {
           $project: {
             _id: 0,

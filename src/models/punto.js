@@ -26,6 +26,10 @@ const PuntoSchema = Schema(
         type: String,
       },
     },
+    estado: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

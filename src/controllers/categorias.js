@@ -10,16 +10,33 @@ ctrlCategorias.obtenerCategorias = async (req, res = response) => {
   };
 
   try {
-    const [total, categorias] = await Promise.all([
+    const [total, categorias, tabla] = await Promise.all([
       Categoria.countDocuments(query),
       Categoria.find(query)
         .populate("usuario", "nombre")
         .skip(Number(desde))
         .limit(Number(limite)),
+      Categoria.aggregate([
+        { $match: query },
+        {
+          $project: {
+            _id: 0,
+            id: "$_id",
+            nombre: 1,
+            createdAt: {
+              $dateToString: {
+                format: "%d-%m-%Y",
+                date: "$createdAt",
+              },
+            },
+          },
+        },
+      ]),
     ]);
 
     res.json({
       total,
+      tabla,
       categorias,
     });
   } catch (err) {

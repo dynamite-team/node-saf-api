@@ -8,16 +8,36 @@ ctrlPuntos.obtenerPuntos = async (req, res = response) => {
   const query = { estado: true };
 
   try {
-    const [total, puntos] = await Promise.all([
+    const [total, puntos, tabla] = await Promise.all([
       Punto.countDocuments(query),
       Punto.find(query)
         .populate("usuario", "nombre")
         .skip(Number(desde))
         .limit(Number(limite)),
+      Punto.aggregate([
+        { $match: query },
+        {
+          $project: {
+            _id: 0,
+            id: "$_id",
+            nombre: 1,
+            departamento: 1,
+            barrio: 1,
+            descripcion: 1,
+            createdAt: {
+              $dateToString: {
+                format: "%d-%m-%Y",
+                date: "$createdAt",
+              },
+            },
+          },
+        },
+      ]),
     ]);
 
     res.json({
       total,
+      tabla,
       puntos,
     });
   } catch (err) {
