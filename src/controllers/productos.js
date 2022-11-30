@@ -6,17 +6,17 @@ const { Date } = require("../helpers/generar-lote");
 const ctrlProductos = {};
 
 ctrlProductos.obtenerProductosProductor = async (req, res = response) => {
-  const { proveedor = "" } = req.query;
-  const query = { estado: true, proveedor };
+  const { id } = req.params;
+  const query = { estado: true, proveedor: id };
   try {
-    const [total, productosProductor] = await Promise.all([
-      Usuario.countDocuments(query),
-      Usuario.find(query),
+    const [total, productos] = await Promise.all([
+      Producto.countDocuments(query),
+      Producto.find(query),
     ]);
 
     res.status(200).json({
       total,
-      productosProductor,
+      productos,
     });
   } catch (err) {
     console.log("Error al mostrar los usuarios", err);

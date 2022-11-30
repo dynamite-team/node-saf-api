@@ -6,8 +6,9 @@ const Usuario = require("../models/usuario");
 const ctrlUsuario = {};
 
 ctrlUsuario.obtenerUsuarios = async (req = request, res = response) => {
-  const { desde = 0, limite = 5 } = req.query;
-  const query = { estado: true };
+  const { desde = 0, limite = 5, rol } = req.query;
+  let query;
+  rol ? (query = { estado: true, rol }) : (query = { estado: true });
 
   try {
     const [total, usuarios] = await Promise.all([

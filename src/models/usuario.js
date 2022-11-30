@@ -19,6 +19,14 @@ const UsuarioSchema = Schema(
       type: Schema.Types.ObjectId,
       ref: "Punto",
     },
+    ubicacion: {
+      lat: {
+        type: Number,
+      },
+      lon: {
+        type: Number,
+      },
+    },
     img: {
       type: String,
     },
