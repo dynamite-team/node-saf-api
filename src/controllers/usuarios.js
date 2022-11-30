@@ -11,13 +11,56 @@ ctrlUsuario.obtenerUsuarios = async (req = request, res = response) => {
   rol ? (query = { estado: true, rol }) : (query = { estado: true });
 
   try {
-    const [total, usuarios] = await Promise.all([
+    const [total, usuarios, tabla] = await Promise.all([
       Usuario.countDocuments(query),
       Usuario.find(query).skip(Number(desde)).limit(Number(limite)),
+
+      Usuario.aggregate([
+        { $match: { estado: true } },
+        /*         {
+          $lookup: {
+            from: "usuarios",
+            localField: "usuario",
+            foreignField: "_id",
+            as: "usuario",
+          },
+        },
+        {
+          $unwind: "$usuario",
+        },
+        {
+          $lookup: {
+            from: "puntos",
+            localField: "punto",
+            foreignField: "_id",
+            as: "punto",
+          },
+        },
+        {
+          $unwind: "$punto",
+        },*/
+        {
+          $project: {
+            _id: 0,
+            id: "$_id",
+            nombre: 1,
+            correo: 1,
+            rol: 1,
+            img: 1,
+            createdAt: {
+              $dateToString: {
+                format: "%d-%m-%Y",
+                date: "$createdAt",
+              },
+            },
+          },
+        },
+      ]),
     ]);
 
     res.status(200).json({
       total,
+      tabla,
       usuarios,
     });
   } catch (err) {
