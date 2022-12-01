@@ -55,7 +55,7 @@ const ProductoSchema = Schema(
       ref: "Usuario",
       required: true,
     },
-    disponible: { type: Boolean, default: false },
+    disponible: { type: Boolean, default: true },
     img: { type: String },
   },
   { timestamps: true }
