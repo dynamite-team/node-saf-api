@@ -41,6 +41,9 @@ ctrlOrdenes.stats = async (req, res = response) => {
               total: { $sum: "$sales" },
             },
           },
+          {
+            $sort: { _id : 1}
+          },
         ]),
         Orden.aggregate([
           {
@@ -59,7 +62,6 @@ ctrlOrdenes.stats = async (req, res = response) => {
               productos: 1,
             },
           },
-
           {
             $group: {
               _id: "$month",
@@ -67,6 +69,13 @@ ctrlOrdenes.stats = async (req, res = response) => {
               ordenes: { $sum: 1 },
             },
           },
+          {
+            $sort: {
+              _id : -1
+            }
+          }
+    
+
         ]),
         Orden.aggregate([
           {
@@ -93,6 +102,11 @@ ctrlOrdenes.stats = async (req, res = response) => {
               productos: { $sum: "$productos.cantidad" },
             },
           },
+          {
+            $sort: {
+              _id : -1
+            }
+          }
         ]),
         Orden.aggregate([
           {
@@ -117,6 +131,7 @@ ctrlOrdenes.stats = async (req, res = response) => {
               ordenes: { $sum: 1 },
             },
           },
+          
         ]),
         Orden.aggregate([
           {
@@ -149,8 +164,8 @@ ctrlOrdenes.stats = async (req, res = response) => {
     res
       .status(200)
       .json({ seisMeses, anteriorActualMes, productoMes, esteDia, estaSemana });
-
-     console.log(estaSemana)
+      console.log("mesActual",anteriorActualMes);
+      console.log("productoxmes", productoMes)
   } catch (err) {
     res.status(500).json(err);
   }
