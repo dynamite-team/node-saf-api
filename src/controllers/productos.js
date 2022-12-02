@@ -154,7 +154,7 @@ ctrlProductos.obtenerProductos = async (req, res = response) => {
       });
 
   try {
-    const [total, productos, destinos, productores, disponibles] =
+    const [total, productos, tabla, destinos, productores, disponibles] =
       await Promise.all([
         Producto.countDocuments(query),
         Producto.find(query)
@@ -164,6 +164,45 @@ ctrlProductos.obtenerProductos = async (req, res = response) => {
           .populate("destino.punto", "nombre")
           .skip(Number(desde))
           .limit(Number(limite)),
+        Producto.aggregate([
+          { $match: { estado: true } },
+          {
+            $lookup: {
+              from: "usuarios",
+              localField: "usuario",
+              foreignField: "_id",
+              as: "usuario",
+            },
+          },
+          { $unwind: "$usuario" },
+          {
+            $lookup: {
+              from: "usuarios",
+              localField: "proveedor",
+              foreignField: "_id",
+              as: "proveedor",
+            },
+          },
+          { $unwind: "$proveedor" },
+          {
+            $project: {
+              _id: 0,
+              id: "$_id",
+              nombre: 1,
+              precio: 1,
+              lote: 1,
+              img: 1,
+              proveedor: "$proveedor.nombre",
+              usuario: "$usuario.nombre",
+              updatedAt: {
+                $dateToString: {
+                  format: "%d-%m-%Y",
+                  date: "$updatedAt",
+                },
+              },
+            },
+          },
+        ]),
         Punto.find({
           estado: true,
         }),
@@ -208,13 +247,14 @@ ctrlProductos.obtenerProductos = async (req, res = response) => {
     });
 
     res.json({
+      total,
+      tabla,
+      productos,
       disponibles,
       categorias,
       destinos,
       lotes,
-      productos,
       productores,
-      total,
     });
   } catch (err) {
     console.log("Error al mostrar los productos: ", err);
