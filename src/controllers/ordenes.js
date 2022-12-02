@@ -5,11 +5,16 @@ const ctrlOrdenes = {};
 
 ctrlOrdenes.stats = async (req, res = response) => {
   const date = new Date();
+  console.log(date)
   const today = new Date(date.setHours(0, 0, 0, 0));
-  const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
+  console.log(today)
+  const lastMonth = new Date(date.setMonth(date.getMonth()-1));
+  console.log("ultimo mes", lastMonth)
   const previousMonth = new Date(new Date().setMonth(lastMonth.getMonth() - 1));
-
+  console.log("mes anterior",previousMonth)
   const last6Month = new Date(date.setMonth(date.getMonth() - 6));
+  console.log("ultimos 6 meses",last6Month)
+
 
   try {
     const [seisMeses, anteriorActualMes, productoMes, esteDia, estaSemana] =
@@ -144,6 +149,8 @@ ctrlOrdenes.stats = async (req, res = response) => {
     res
       .status(200)
       .json({ seisMeses, anteriorActualMes, productoMes, esteDia, estaSemana });
+
+     console.log(estaSemana)
   } catch (err) {
     res.status(500).json(err);
   }
