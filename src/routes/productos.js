@@ -12,6 +12,8 @@ const {
   crearProducto,
   actualizarProducto,
   borrarProducto,
+  asignarStock,
+  borrarStock,
 } = require("../controllers/productos");
 
 const {
@@ -64,6 +66,29 @@ router.put(
     validarCampos,
   ],
   actualizarProducto
+);
+
+router.post(
+  "/stock",
+  /*  [
+    validarJWT,
+    // check('categoria','No es un id de Mongo').isMongoId(),
+    validarCampos,
+  ], */
+  asignarStock
+);
+
+router.delete(
+  "/:uid/:id",
+  [
+    validarJWT,
+    //esAdminRole,
+    check("uid", "No es un id de Mongo válido").isMongoId(),
+    check("uid").custom(existeProductoPorId),
+    check("id", "No es un id de Mongo válido").isMongoId(),
+    validarCampos,
+  ],
+  borrarStock
 );
 
 // Borrar una categoria - Admin

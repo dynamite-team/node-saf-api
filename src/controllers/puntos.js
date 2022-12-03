@@ -17,6 +17,15 @@ ctrlPuntos.obtenerPuntos = async (req, res = response) => {
       Punto.aggregate([
         { $match: query },
         {
+          $lookup: {
+            from: "usuarios",
+            localField: "usuario",
+            foreignField: "_id",
+            as: "usuario",
+          },
+        },
+        { $unwind: "$usuario" },
+        {
           $project: {
             _id: 0,
             id: "$_id",
@@ -24,10 +33,11 @@ ctrlPuntos.obtenerPuntos = async (req, res = response) => {
             departamento: 1,
             barrio: 1,
             descripcion: 1,
-            createdAt: {
+            usuario: "$usuario.nombre",
+            updatedAt: {
               $dateToString: {
                 format: "%d-%m-%Y",
-                date: "$createdAt",
+                date: "$updatedAt",
               },
             },
           },

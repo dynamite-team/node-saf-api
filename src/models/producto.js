@@ -21,6 +21,10 @@ const ProductoSchema = Schema(
       type: Number,
       default: 1,
     }, */
+    unidad: {
+      type: String,
+      default: "unidad",
+    },
     precio: {
       type: Number,
       default: 0,

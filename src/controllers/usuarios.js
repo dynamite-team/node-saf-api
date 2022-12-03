@@ -24,10 +24,10 @@ ctrlUsuario.obtenerUsuarios = async (req = request, res = response) => {
             correo: 1,
             rol: 1,
             img: 1,
-            createdAt: {
+            updatedAt: {
               $dateToString: {
                 format: "%d-%m-%Y",
-                date: "$createdAt",
+                date: "$updatedAt",
               },
             },
           },

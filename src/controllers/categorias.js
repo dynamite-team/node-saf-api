@@ -19,14 +19,25 @@ ctrlCategorias.obtenerCategorias = async (req, res = response) => {
       Categoria.aggregate([
         { $match: query },
         {
+          $lookup: {
+            from: "usuarios",
+            localField: "usuario",
+            foreignField: "_id",
+            as: "usuario",
+          },
+        },
+        { $unwind: "$usuario" },
+        {
           $project: {
             _id: 0,
             id: "$_id",
             nombre: 1,
-            createdAt: {
+            img: 1,
+            usuario: "$usuario.nombre",
+            updatedAt: {
               $dateToString: {
                 format: "%d-%m-%Y",
-                date: "$createdAt",
+                date: "$updatedAt",
               },
             },
           },

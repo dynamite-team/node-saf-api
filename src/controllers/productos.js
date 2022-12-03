@@ -2,6 +2,7 @@ const { response } = require("express");
 const { Producto, Punto, Usuario } = require("../models");
 
 const { Date } = require("../helpers/generar-lote");
+const { default: mongoose } = require("mongoose");
 
 const ctrlProductos = {};
 
@@ -95,6 +96,7 @@ ctrlProductos.obtenerInventario = async (req, res = response) => {
             lote: 1,
             nombre: 1,
             //precio: 1,
+            unidad: 1,
             uid: "$_id",
             id: "$destino._id",
             cantidad: "$destino.cantidad",
@@ -191,6 +193,8 @@ ctrlProductos.obtenerProductos = async (req, res = response) => {
               nombre: 1,
               precio: 1,
               lote: 1,
+              descripcion: 1,
+              unidad: 1,
               img: 1,
               proveedor: "$proveedor.nombre",
               usuario: "$usuario.nombre",
@@ -290,15 +294,15 @@ ctrlProductos.crearProducto = async (req, res = response) => {
   }
 
   try {
-    const productoDB = await Producto.findOne({
+    /*    const productoDB = await Producto.findOne({
       $and: [{ nombre: body.nombre.toUpperCase() }, { lote: body.lote }],
-    });
+    }); */
 
-    if (productoDB) {
+    /*     if (productoDB) {
       return res.status(400).json({
         msg: `El producto ${productoDB.nombre}, ya existe`,
       });
-    }
+    } */
 
     // Generar la data a guardar
     const data = {
@@ -334,6 +338,58 @@ ctrlProductos.actualizarProducto = async (req, res = response) => {
     const producto = await Producto.findByIdAndUpdate(id, data, { new: true });
 
     res.json(producto);
+  } catch (err) {
+    console.log("Error al * el producto: ", err);
+    res.status(500).json({
+      msg: "Por favor, hable con el administrador",
+    });
+  }
+};
+
+ctrlProductos.asignarStock = async (req, res = response) => {
+  const { stock } = req.body;
+
+  try {
+    const arrPromesa = stock.map(({ uid, ...resto }) => {
+      return Producto.findByIdAndUpdate(uid, resto, { new: true });
+    });
+
+    //Otra opcion allSettled, si falla me indica en donde lo hizo
+    await Promise.all(arrPromesa);
+
+    res.status(201).json({
+      msg: "Stock agregado correctamente",
+    });
+  } catch (err) {
+    console.log("Error al asignar el stock: ", err);
+    res.status(500).json({
+      msg: "Por favor, hable con el administrador",
+    });
+  }
+};
+
+ctrlProductos.borrarStock = async (req, res = response) => {
+  const { uid, id } = req.params;
+
+  try {
+    const producto = await Producto.updateOne(
+      { _id: uid },
+      {
+        $pull: {
+          destino: { _id: id },
+        },
+      }
+    );
+
+    /*     const productoBorrado = await Producto.findById(uid);
+
+    console.log(productoBorrado.destino[0]._id.toString(), id);
+
+    productoBorrado.destino.filter((destino) => destino._id.toString() !== id);
+
+    console.log(productoBorrado.destino); */
+
+    res.json({ msg: "Borrado" });
   } catch (err) {
     console.log("Error al * el producto: ", err);
     res.status(500).json({
