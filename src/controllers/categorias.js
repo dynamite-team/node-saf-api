@@ -36,7 +36,7 @@ ctrlCategorias.obtenerCategorias = async (req, res = response) => {
             usuario: "$usuario.nombre",
             updatedAt: {
               $dateToString: {
-                format: "%d-%m-%Y",
+                format: "%Y-%m-%d",
                 date: "$updatedAt",
               },
             },

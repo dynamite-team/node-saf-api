@@ -26,7 +26,7 @@ ctrlUsuario.obtenerUsuarios = async (req = request, res = response) => {
             img: 1,
             updatedAt: {
               $dateToString: {
-                format: "%d-%m-%Y",
+                format: "%Y-%m-%d",
                 date: "$updatedAt",
               },
             },

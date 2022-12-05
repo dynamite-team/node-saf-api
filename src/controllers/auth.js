@@ -51,10 +51,10 @@ ctrlAuth.login = async (req, res = response) => {
 };
 
 ctrlAuth.register = async (req, res = response) => {
-  const { nombre, correo, password, designado, rol } = req.body;
+  const { password, ...resto } = req.body;
 
   try {
-    const usuario = new Usuario({ nombre, correo, password, designado, rol });
+    const usuario = new Usuario(resto);
 
     // Encriptar la contraseña
     const salt = bcryptjs.genSaltSync();
@@ -70,7 +70,7 @@ ctrlAuth.register = async (req, res = response) => {
       token,
     });
   } catch (err) {
-    console.log("Error al registrar al usuario: ", error);
+    console.log("Error al registrar al usuario: ", err);
     res.status(500).json({
       msg: "Por favor, hable con el administrador",
     });
