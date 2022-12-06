@@ -20,7 +20,9 @@ ctrlUsuario.obtenerUsuarios = async (req = request, res = response) => {
           $project: {
             _id: 0,
             id: "$_id",
+            usuario: 1,
             nombre: 1,
+            apellido: 1,
             correo: 1,
             rol: 1,
             img: 1,

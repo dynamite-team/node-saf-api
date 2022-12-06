@@ -1,4 +1,5 @@
 const { response } = require("express");
+const { default: mongoose } = require("mongoose");
 const { Orden, Producto } = require("../models");
 
 const ctrlOrdenes = {};
@@ -538,7 +539,9 @@ ctrlOrdenes.obtenerOrdenes = async (req, res = response) => {
           $project: {
             _id: 0,
             id: "$_id",
-            usuario: "$usuario.nombre",
+            usuario: "$usuario.usuario",
+            nombre: "$usuario.nombre",
+            apellido: "$usuario.apellido",
             img: "$usuario.img",
             montoTotal: 1,
             punto: "$punto.nombre",
@@ -570,12 +573,32 @@ ctrlOrdenes.obtenerOrden = async (req, res = response) => {
   const { id } = req.params;
 
   try {
-    const orden = await Orden.findById(id)
-      .populate("usuario", "nombre")
-      .populate(
-        "productos.producto",
-        "nombre precio categoria descripcion lote proveedor unidad img"
-      )
+    const orden = await Orden /* aggregate([
+      {
+        $match: {
+          _id: mongoose.Types.ObjectId(id),
+        },
+      },
+      {
+        $lookup: {
+          from: "usuarios",
+          localField: "usuario",
+          foreignField: "_id",
+          as: "usuario",
+        },
+      },
+      { $unwind: "$usuario" },
+      {
+        $lookup: {
+          from: "productos",
+          localField: "productos.producto",
+          foreignField: "_id",
+          as: "producto",
+        },
+      },
+    ]); */.findById(id)
+      .populate("usuario", "usuario nombre apellido img")
+      .populate("productos.producto", "categoria descripcion lote unidad img")
       .populate("punto", "nombre");
 
     res.json(orden);
