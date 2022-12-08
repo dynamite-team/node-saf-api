@@ -99,6 +99,7 @@ ctrlOrdenes.stats = async (req, res = response) => {
           $group: {
             _id: "$month",
             total: { $sum: "$sales" },
+            cantVentas: { $sum: 1 },
           },
         },
         {
