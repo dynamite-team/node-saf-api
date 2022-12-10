@@ -23,6 +23,9 @@ const UsuarioSchema = Schema(
       type: String,
       required: [true, "La contraseña es obligatoria"],
     },
+    descripcion:{
+      type: String
+    },
     designado: {
       type: Schema.Types.ObjectId,
       ref: "Punto",
