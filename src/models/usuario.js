@@ -23,8 +23,9 @@ const UsuarioSchema = Schema(
       type: String,
       required: [true, "La contraseña es obligatoria"],
     },
-    descripcion:{
-      type: String
+    description:{
+      type: String,
+      default: "Soy trabajador del SAF"
     },
     designado: {
       type: Schema.Types.ObjectId,

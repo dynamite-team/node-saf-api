@@ -86,7 +86,11 @@ ctrlUsuario.editarUsuario = async (req, res = response) => {
   try {
     const usuario = await Usuario.findByIdAndUpdate(id, resto);
 
-    res.json(usuario);
+    res.json(
+      {
+        ok: true,
+        usuario
+      });
   } catch (err) {
     console.log("Error al actualizar el usuario: ", err);
     res.status(500).json({
