@@ -23,7 +23,7 @@ const ProductoSchema = Schema(
     }, */
     unidad: {
       type: String,
-      default: "unidad",
+      default: "UN",
     },
     precio: {
       type: Number,
