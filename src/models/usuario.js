@@ -25,7 +25,7 @@ const UsuarioSchema = Schema(
     },
     description:{
       type: String,
-      default: "Soy trabajador del SAF"
+      default: "Trabajador del SAF",
     },
     designado: {
       type: Schema.Types.ObjectId,
